@@ -1,0 +1,309 @@
+import { useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
+import { useLocation, useParams } from "react-router";
+import PullToRefresh from "react-simple-pull-to-refresh";
+import { Icon, Page, Text, useNavigate } from "zmp-ui";
+import ProdsAPI from "../../api/prods.api";
+import { ImageLazy } from "../../components/ImagesLazy";
+import { toAbsolutePath, toAbsolutePathAPI } from "../../utils/assetPath";
+import { HtmlParser } from "../../components/HtmlParser";
+import { NavLink } from "react-router-dom";
+import { Follow } from "../home/components/follow";
+import { openChat, openShareSheet } from "zmp-sdk";
+import { useLayout } from "../../layout/LayoutProvider";
+import { formatString } from "../../utils/formatString";
+
+const CatalogueServicePage = () => {
+  const navigate = useNavigate();
+  let { id } = useParams();
+
+  let { GlobalConfig } = useLayout();
+
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["CatalogueSerivce", { id }],
+    queryFn: async () => {
+      const newQueryParams = {
+        pi: 1,
+        ps: 1,
+        stockid: 0,
+        cates: "795",
+        rootIds: id,
+      };
+      const { data } = await ProdsAPI.listServiceRoot(newQueryParams);
+      return data && data?.lst && data?.lst.length > 0 ? data.lst[0] : null;
+    },
+    enabled: Number(id) > -1,
+  });
+
+  return (
+    <Page className="page !pb-safe-bottom bg-white" hideScrollbar>
+      <div className="navbar fixed top-0 left-0 min-w-[100vw] max-w-[100vw] z-[999] bg-app text-white">
+        <div className="w-2/3 relative flex items-center h-full pl-10">
+          <div
+            className="absolute left-0 w-10 h-full flex justify-center items-center cursor-pointer"
+            onClick={() => navigate(-1)}
+          >
+            <Icon icon="zi-chevron-left-header" />
+          </div>
+          <Text.Title>Chi tiết dịch vụ</Text.Title>
+        </div>
+      </div>
+      <PullToRefresh className="ezs-ptr ezs-ptr-safe" onRefresh={refetch}>
+        <div className="h-full flex flex-col">
+          <div className="grow overflow-auto no-scrollbar">
+            <div className="relative border-t-[2px] border-b-[2px]">
+              {!isLoading && (
+                <ImageLazy
+                  wrapperClassName="aspect-square !block"
+                  className="aspect-square object-cover w-full"
+                  effect="blur"
+                  src={toAbsolutePath(data?.root?.Thumbnail)}
+                />
+              )}
+              {isLoading && (
+                <div className="aspect-square">
+                  <div className="flex items-center justify-center w-full h-full bg-gray-300 animate-pulse">
+                    <svg
+                      className="w-16 h-16 text-gray-200"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                      fill="currentColor"
+                      viewBox="0 0 640 512"
+                    >
+                      <path d="M480 80C480 35.82 515.8 0 560 0C604.2 0 640 35.82 640 80C640 124.2 604.2 160 560 160C515.8 160 480 124.2 480 80zM0 456.1C0 445.6 2.964 435.3 8.551 426.4L225.3 81.01C231.9 70.42 243.5 64 256 64C268.5 64 280.1 70.42 286.8 81.01L412.7 281.7L460.9 202.7C464.1 196.1 472.2 192 480 192C487.8 192 495 196.1 499.1 202.7L631.1 419.1C636.9 428.6 640 439.7 640 450.9C640 484.6 612.6 512 578.9 512H55.91C25.03 512 .0006 486.1 .0006 456.1L0 456.1z" />
+                    </svg>
+                  </div>
+                </div>
+              )}
+
+              <button
+                type="button"
+                className="w-12 h-12 absolute rounded-full bg-white flex items-center justify-center -bottom-5 right-4 text-primary disabled:opacity-60 shadow-lg"
+                disabled={isLoading}
+                onClick={() => {
+                  openShareSheet({
+                    type: "zmp_deep_link",
+                    data: {
+                      title: data?.root.Title,
+                      description: data?.root.Desc,
+                      thumbnail: toAbsolutePath(data?.root?.Thumbnail),
+                    },
+                  });
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+                  />
+                </svg>
+              </button>
+            </div>
+            {isLoading && (
+              <div>
+                <div className="text-lg font-bold uppercase border-b-[5px] p-3">
+                  <div className="h-3.5 bg-gray-300 rounded-full w-9/12 animate-pulse"></div>
+                  <div className="h-2 bg-gray-300 rounded-full w-5/12 mt-2 animate-pulse"></div>
+                </div>
+                <div className="p-3">
+                  <div className="h-2 bg-gray-300 rounded-full w-9/12 mb-2 last:mb-0 animate-pulse"></div>
+                  <div className="h-2 bg-gray-300 rounded-full w-full mb-2 last:mb-0 animate-pulse"></div>
+                  <div className="h-2 bg-gray-300 rounded-full w-10/12 mb-2 last:mb-0 animate-pulse"></div>
+                  <div className="h-2 bg-gray-300 rounded-full w-full mb-2 last:mb-0 animate-pulse"></div>
+                </div>
+              </div>
+            )}
+            {!isLoading && (
+              <div>
+                <div className="px-3 py-3.5 border-b-[5px] bg-app text-white">
+                  <div className="text-lg font-bold uppercase">
+                    {data?.root.Title}
+                  </div>
+                  <div className="font-semibold mt-1">
+                    {data?.PriceBase ? formatString.formatVND(data?.PriceBase) : "Tư vấn thêm"}
+                  </div>
+                </div>
+                <div className="p-3 [&_img]:!w-full [&_img]:!h-auto [&_img]:mb-3">
+                  {(data?.root.Desc || data?.root.Detail) && (
+                    <div>
+                      <HtmlParser>
+                        {data?.root.Desc}
+                        {data?.root.Detail}
+                      </HtmlParser>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            <div className="bg-[#f4f4f4] pt-3">
+              <div className="empty:hidden">
+                <Follow />
+              </div>
+              <div className="px-3 pb-3.5">
+                <div className="bg-white rounded-lg overflow-hidden border">
+                  <div className="flex flex-col items-center py-4">
+                    <div className="text-gold pb-2 mb-3 relative uppercase font-semibold after:content-[''] after:absolute after:h-[2px] after:w-14 after:bg-app after:left-2/4 after:-translate-x-2/4 after:bottom-0">
+                      Thông tin liên hệ
+                    </div>
+                    <div>
+                      <img
+                        className="w-[100px]"
+                        src={toAbsolutePathAPI("/brand/images/logo-zalo.png?" + new Date().getTime())}
+                      />
+                    </div>
+                  </div>
+                  <div className="bg-app text-white px-3 py-4">
+                    <NavLink
+                      to="/user/customer-branch"
+                      className="flex items-center gap-2 font-medium mb-2.5 last:mb-0"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="{1.5}"
+                        stroke="currentColor"
+                        className="w-5"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
+                        />
+                      </svg>
+                      Xem hệ thống cơ sở
+                    </NavLink>
+                    <div className="flex items-center gap-2 font-medium mb-2.5 last:mb-0">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="{1.5}"
+                        stroke="currentColor"
+                        className="w-5"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z"
+                        />
+                      </svg>
+                      {GlobalConfig?.ZALO?.Tel || "033 556 1368"}
+                    </div>
+                    <div className="flex items-center gap-2 font-medium mb-2.5 last:mb-0">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="{1.5}"
+                        stroke="currentColor"
+                        className="w-5"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
+                        />
+                      </svg>
+                      {GlobalConfig?.ZALO?.Email || "Elmerspadongy@gmail.com"}
+                    </div>
+                    <div className="flex items-center gap-2 font-medium mb-2.5 last:mb-0">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="{1.5}"
+                        stroke="currentColor"
+                        className="w-5"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="m20.893 13.393-1.135-1.135a2.252 2.252 0 0 1-.421-.585l-1.08-2.16a.414.414 0 0 0-.663-.107.827.827 0 0 1-.812.21l-1.273-.363a.89.89 0 0 0-.738 1.595l.587.39c.59.395.674 1.23.172 1.732l-.2.2c-.212.212-.33.498-.33.796v.41c0 .409-.11.809-.32 1.158l-1.315 2.191a2.11 2.11 0 0 1-1.81 1.025 1.055 1.055 0 0 1-1.055-1.055v-1.172c0-.92-.56-1.747-1.414-2.089l-.655-.261a2.25 2.25 0 0 1-1.383-2.46l.007-.042a2.25 2.25 0 0 1 .29-.787l.09-.15a2.25 2.25 0 0 1 2.37-1.048l1.178.236a1.125 1.125 0 0 0 1.302-.795l.208-.73a1.125 1.125 0 0 0-.578-1.315l-.665-.332-.091.091a2.25 2.25 0 0 1-1.591.659h-.18c-.249 0-.487.1-.662.274a.931.931 0 0 1-1.458-1.137l1.411-2.353a2.25 2.25 0 0 0 .286-.76m11.928 9.869A9 9 0 0 0 8.965 3.525m11.928 9.868A9 9 0 1 1 8.965 3.525"
+                        />
+                      </svg>
+                      {GlobalConfig?.ZALO?.Website || "https://elmerspa.vn"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="p-3">
+            <button
+              disabled={isLoading}
+              onClick={() => {
+                openChat({
+                  type: GlobalConfig?.ZALO?.type,
+                  id: GlobalConfig?.ZALO?.ID,
+                  message: `Xin chào? Mình cần tư vấn về dịch vụ ${data?.root.Title} ?`,
+                });
+              }}
+              type="button"
+              className="bg-app py-3.5 min-h-[52px] w-full text-center rounded-3xl text-white font-medium flex justify-center items-center gap-2 cursor-pointer disabled:opacity-60 relative"
+            >
+              {isLoading && (
+                <div className="absolute w-12 h-12 top-2/4 left-2/4 -translate-x-2/4 -translate-y-2/4 flex items-center justify-center">
+                  <div role="status">
+                    <svg
+                      aria-hidden="true"
+                      className="w-7 text-gray-200 animate-spin fill-primary"
+                      viewBox="0 0 100 101"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                        fill="currentColor"
+                      />
+                      <path
+                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                        fill="currentFill"
+                      />
+                    </svg>
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
+              )}
+              {!isLoading && (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="{1.5}"
+                    stroke="currentColor"
+                    className="w-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"
+                    />
+                  </svg>
+
+                  Tư vấn ngay
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </PullToRefresh>
+    </Page>
+  );
+};
+
+export default CatalogueServicePage;

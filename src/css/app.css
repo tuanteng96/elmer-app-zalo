@@ -1,0 +1,292 @@
+@import url("https://fonts.googleapis.com/css2?family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap");
+
+:root {
+  --zaui-light-bottom-navigation-divider-color: #222;
+  --zaui-light-bottom-navigation-background-color: #222;
+  --zaui-light-bottom-navigation-color: #b5b5b5;
+  --zaui-light-bottom-navigation-active-color: #fff;
+}
+
+html,
+body {
+  font-family: "TikTok Sans", sans-serif;
+}
+
+.content-full a {
+  @apply text-primary;
+}
+
+.content-full img {
+  @apply !max-w-full !h-auto;
+}
+
+body {
+  background: #f5f5fa;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+p:not(:last-child) {
+  margin-bottom: 12px;
+}
+
+.page {
+  padding: calc(var(--zaui-safe-area-inset-top, 0px) + 48px) 0
+    calc(var(--zaui-safe-area-inset-bottom, 0px) + 48px) 0;
+}
+
+.page.no-toolbar {
+  padding: calc(var(--zaui-safe-area-inset-top, 0px) + 48px) 0 0 0;
+}
+
+.navbar {
+  height: calc(var(--zaui-safe-area-inset-top, 0px) + 48px);
+  padding-top: calc(var(--zaui-safe-area-inset-top, 0px));
+}
+
+/* /navigation/ */
+.zaui-bottom-navigation-item .zaui-bottom-navigation-item-label {
+  font-size: 10px;
+}
+/* // */
+
+.mask-wave {
+  --mask:
+    radial-gradient(2.33px at 3.2px 50%, #000 99%, #0000 101%) 0
+      calc(50% - 4px) / 51% 8px repeat-y,
+    radial-gradient(2.33px at -1.2px 50%, #0000 99%, #000 101%) 2px 50% /
+      calc(51% - 2px) 8px repeat-y,
+    radial-gradient(2.33px at calc(100% - 3.2px) 50%, #000 99%, #0000 101%) 100%
+      calc(50% - 4px) / 51% 8px repeat-y,
+    radial-gradient(2.33px at calc(100% + 1.2px) 50%, #0000 99%, #000 101%)
+      calc(100% - 2px) 50% / calc(51% - 2px) 8px repeat-y;
+  -webkit-mask: var(--mask);
+  mask: var(--mask);
+}
+
+.bg-stripes {
+  background-image: linear-gradient(
+    45deg,
+    #ddd 25%,
+    transparent 0,
+    transparent 50%,
+    #ddd 0,
+    #ddd 75%,
+    transparent 0,
+    transparent
+  );
+  background-size: 4px 4px;
+  cursor: not-allowed;
+}
+
+.swiper-pagination.swiper-pagination-horizontal {
+  display: flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  width: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 100px;
+  padding: 4px;
+  bottom: 12px;
+}
+
+.swiper-pagination.swiper-pagination-horizontal > .swiper-pagination-bullet {
+  width: 4px;
+  height: 4px;
+  margin: 0;
+  background: rgba(255, 255, 255, 0.6);
+}
+.swiper-pagination.swiper-pagination-horizontal
+  > .swiper-pagination-bullet.swiper-pagination-bullet-active {
+  background: #ffffff;
+  transform: scale(1.5);
+}
+/* Sheet Select */
+
+.sheet-select .zaui-sheet-content {
+  max-height: 80%;
+}
+
+.zaui-sheet-content {
+  max-height: 80vh;
+}
+
+.zaui-mask {
+  opacity: .6;
+}
+
+.sheet-content-scroll .zaui-sheet-content {
+  @apply h-full
+}
+
+.select-not-label .zaui-input-group-addon {
+  @apply hidden;
+}
+
+.select-not-label .zaui-input-affix-wrapper {
+  @apply m-0;
+}
+
+.select-not-label .zaui-input-affix-wrapper-disabled {
+  border: 1px solid #b9bdc1;
+}
+
+.quills .ql-container {
+  @apply h-[150px] rounded-b-lg
+}
+
+/* Tabs */
+
+.tab-scrollbar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.tab-scrollbar > .zaui-tab-content {
+  height: calc(100% - 44px);
+}
+
+.tab-scrollbar > .zaui-tabs-tabbar:not(.zaui-tabs-tabbar-scrollable) {
+  @apply grid grid-cols-2;
+}
+
+.tab-scrollbar.zaui-cols-3
+  > .zaui-tabs-tabbar:not(.zaui-tabs-tabbar-scrollable) {
+  @apply grid-cols-3;
+}
+
+.tab-scrollbar.zaui-cols-3 > .zaui-tabs-tabbar .zaui-tabs-tabbar-item {
+  padding: 12px 6px;
+  font-size: 14px;
+}
+
+.tab-scrollbar > .zaui-tabs-tabbar .zaui-tabs-tabbar-item {
+  text-align: center;
+  cursor: pointer;
+}
+
+.tab-scrollbar > .zaui-tab-content .zaui-tab {
+  height: 100%;
+}
+
+/* Modal */
+
+.zaui-modal-content-title:empty {
+  display: none;
+}
+
+.next-zaui-modal-wrapper ~ .zaui-modal-wrapper {
+  height: 100%;
+}
+
+.sheet-content-max .zaui-sheet-content {
+  max-height: 90vh;
+}
+
+/* Booking */
+
+.slider-booking-time .slider-control-centerright {
+  position: absolute;
+  bottom: -36px;
+  right: 5px;
+}
+
+.tab-booking .zaui-tabs-tabbar-active-line {
+  @apply hidden;
+}
+
+.tab-booking > .zaui-tabs-tabbar {
+  @apply gap-5;
+}
+
+.tab-booking > .zaui-tabs-tabbar > .zaui-tabs-tabbar-item {
+  @apply relative overflow-visible font-medium capitalize;
+}
+
+.tab-booking > .zaui-tabs-tabbar > .zaui-tabs-tabbar-item {
+  @apply text-app;
+}
+
+.tab-booking
+  > .zaui-tabs-tabbar
+  > .zaui-tabs-tabbar-item.zaui-tabs-tabbar-item-active
+  ~ .zaui-tabs-tabbar-item {
+  color: #767a7f;
+}
+
+.tab-booking
+  > .zaui-tabs-tabbar
+  > .zaui-tabs-tabbar-item.zaui-tabs-tabbar-item-active
+  ~ .zaui-tabs-tabbar-item::after {
+  background: #8e8e93;
+}
+
+.tab-booking > .zaui-tabs-tabbar > .zaui-tabs-tabbar-item {
+  @apply relative bg-white;
+}
+
+.tab-booking > .zaui-tabs-tabbar > .zaui-tabs-tabbar-item::after {
+  content: "";
+  height: 1px;
+  position: absolute;
+
+  @apply w-5 top-2/4 -translate-y-2/4 -right-5 bg-app;
+}
+
+.tabs-time-booking .zaui-tabs-tabbar {
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  @apply grid grid-cols-3 gap-3;
+}
+
+.tabs-time-booking .zaui-tabs-tabbar .zaui-tabs-tabbar-item {
+  padding: 12px 6px;
+  background-color: rgba(77, 89, 149, 0.06);
+  @apply text-center transition rounded-sm cursor-pointer;
+}
+
+.tabs-time-booking
+  .zaui-tabs-tabbar
+  .zaui-tabs-tabbar-item.zaui-tabs-tabbar-item-active {
+  @apply text-white bg-app;
+}
+
+.tabs-time-booking .zaui-tabs-tabbar .zaui-tabs-tabbar-active-line {
+  display: none;
+}
+
+/* / Pull To Refresh / */
+.ezs-ptr .lds-ellipsis div {
+  @apply !bg-app;
+}
+
+.ezs-ptr.ezs-ptr-safe.ptr--pull-down-treshold-breached
+  .ptr__pull-down--loading {
+  @apply p-safe;
+}
+
+.ezs-ptr.ezs-ptr-safe.ptr--pull-down-treshold-breached .ptr__children {
+  @apply !translate-y-ptr;
+}
+
+.ezs-ptr .ptr__pull-down--pull-more {
+  display: none !important;
+}
+
+.zaui-select-option:focus, .zaui-select-option:active {
+  @apply bg-white
+}
+
+.LinesEllipsis-canvas {
+  @apply invisible pointer-events-none
+}
